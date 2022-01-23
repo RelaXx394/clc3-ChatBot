@@ -10,8 +10,18 @@ Das gesamte Projekt ist mit einer Node.js App realisiert.
 Unser Chatbot ist auf dem Modell einer Flugreservierung aufgebaut. Dieses Modell ist im Ordner `cognitiveMOdels/FlightBooking.json` zu finden. 
 
 ### Setup
+1. [Anmelden im LUIS portal](https://docs.microsoft.com/en-us/azure/cognitive-services/luis/sign-in-luis-portal)  und falls benötigt  [create an account](https://docs.microsoft.com/en-us/free/cognitive-services/)  und [authoring resource](https://docs.microsoft.com/en-us/azure/cognitive-services/luis/luis-how-to-azure-subscription).
+2. **Create a new authoring resource** und wähle einen **Resource Name**, Location (west europe) und Pricing Tier (F0 free).
+![Authoring Resource](./pictures/luis_1.png)
+3. Wählen Sie auf der Seite **Conversation apps** in [LUIS](https://www.luis.ai/applications) den Abwärtspfeil rechts neben **New App** und dann **Import als JSON**.
+
+4. Wähle im  **Import new app**  Dialog die  **FlightBooking.json**  Datei aus und klick auf **Done**.
 
 ### Training und Publish
+5. In der Ressource muss nun die LUIS App trainiert werden. Das geht mit einem Klick auf **Train**.
+6. Über **Test** kann die App getestet werden. 
+7. Mit **Publish** und der Auswahl von "Staging Slot" und "Production Slot" kann die trainierte LUIS App nun in Microsoft Azure gepublished werden.
+8. Danach kann in Microsoft Azure auf die in Schritt 2 erstellte Resource Group gewechselt werden. Die `LuisAppId` ist unter **Übersicht** und hier **Abonnement-ID** zu finden, dder `LuisAPIHostName` ist der **Endpunkt**. Der benötigte `LuisAPIKey` ist unter **Schlüssel und Endpunkt** und hier Schlüssel 1 zu finden.
 
 ### Konfigurierung 
 
@@ -274,5 +284,47 @@ Im Deployment Center der Webapp kann der aktuell aktive Commit begutachtet werde
 
 ![Gesamtbild](./pictures/overall.PNG)
 
-## Lessons Learned
+# Lessons Learned
+### Code understanding
+Python wird nicht unterstütz daher mussten wir auf C# und .js umsteigen. Das Wissen über diese Programmiersprachen fehlte in unserem Team.
 
+###  Github Actions Dauer
+Durch zippen der Files konnte die Dauer des Deployment von ~40 Minuten auf ~8 Minuten gesenkt werden.
+
+### Schwieriges Debbugin
+Error Messages sind, wenn vorhanden, nicht sehr intensiv besprochen. 
+Beispiel:  “an error  has  occurred – check the source code“
+
+### IDs und Keys Übersicht
+Für Ressourcen werden oft eine ID oder Name benötigt. Diese soll eindeutig und unverwechselbar sein und es ist sehr hilfreich, wenn diese in einem ".txt" File nebenbei abgespeichert werden um sie bei Verlinkungen zwischen Ressourcen bereit zu haben.
+
+
+## Problems
+### Azure Zusammenarbeit 
+Die Zusammenarbeit ist mit Free Accounts nur bedingt möglich.
+
+### Outdated Dokumentation
+In Detailfragen nur limitierte Dokumentation. Bei der Umsetzung des Projektes fanden wir sehr oft Outdated Documentation. Das größte Problem war hier, dass sich die Dokumentation und Tutorials oft auf den "Web App Bot" beziehen, diesen gibt es allerdings nicht mehr da er "deprecated" wurde.
+
+![Azure Bot Bewertungen](./pictures/azure_bot.png)
+
+### App Registration
+Für eine App Registration fehlen die Berechtigungen bei Studentenkonten. 
+
+![App Registration Rechte](./pictures/app_registration.png)
+
+#### Python
+Der eigentlich Plan war einen SDK Example Bot in Python zu ergänzen und umzuschreiben. Bei einem lokalen Test (localhost) funktioniert der Python Bot wie beabsichtigt nur leider unterstützen die SDKs für Python nur "multi-tenant" Bots.
+Diese "multi-tenant" Bots können nicht auf Microsoft Azure verwendet werden ohne eine App Registration vorher durchzuführen.
+
+![multi_tenant](./pictures/mulit_tenant.png)
+
+#### Bot Framework Composer
+Microsoft Azure empfiehlt für die Entwicklung von Bots die Desktop-App "Bot Framework Composer". Auch hier funktioniert der Bot bei lokalen Tests wie beabsichtigt, nur kann bei einem Publish in Microsoft Azure die App Registration nicht erstellt werden. 
+
+![composer_RG](./pictures/composer_pic_1.png)
+![composer_error](./pictures/composer_pic_2.png)
+
+Es gibt auch einen Issue dazu in Github, jedoch tritt dieser Fehler auf, da der "Bot Framework Composer" nur "multi-tenant" Bots unterstützt.
+
+https://github.com/microsoft/BotFramework-Composer/issues/8283
